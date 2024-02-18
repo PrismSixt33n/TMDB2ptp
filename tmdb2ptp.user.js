@@ -6,6 +6,8 @@
 // @match        https://passthepopcorn.me/torrents.php*
 // @description  Pulls and impliments multiple sections from TMDB to PassThePopcorns movies pages.
 // @icon         https://www.themoviedb.org/assets/1/v4/logos/312x276-primary-green-74212f6247252a023be0f02a5a45794925c3689117da9d20ffe47742a665c518.png
+// @downloadURL  https://github.com/PrismSixt33n/TMDB2ptp/raw/main/tmdb2ptp.user.js
+// @updateURL    https://github.com/PrismSixt33n/TMDB2ptp/raw/main/tmdb2ptp.user.js
 // @author       Prism16
 // ==/UserScript==
 
