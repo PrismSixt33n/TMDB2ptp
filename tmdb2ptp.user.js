@@ -1,28 +1,81 @@
 // ==UserScript==
 // @name         PTP - TMDB To PassThePopcorn
-// @version      1.5
+// @version      1.6
 // @grant        GM_xmlhttpRequest
 // @grant        GM.notification
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @match        https://passthepopcorn.me/torrents.php*
-// @description  Pulls and impliments multiple sections from TMDB to PassThePopcorns movies pages.
-// @icon         https://www.themoviedb.org/assets/1/v4/logos/312x276-primary-green-74212f6247252a023be0f02a5a45794925c3689117da9d20ffe47742a665c518.png
 // @downloadURL  https://github.com/PrismSixt33n/TMDB2ptp/raw/main/tmdb2ptp.user.js
 // @updateURL    https://github.com/PrismSixt33n/TMDB2ptp/raw/main/tmdb2ptp.user.js
+// @description  Pulls and impliments multiple sections from TMDBs API to PassThePopcorns movies pages.
+// @icon         https://www.themoviedb.org/assets/1/v4/logos/312x276-primary-green-74212f6247252a023be0f02a5a45794925c3689117da9d20ffe47742a665c518.png
 // @author       Prism16
 // ==/UserScript==
 
-
-
-/// API KEY GOES BELOW 'INBETWEEN_THESE'
-let apiKey = '#####################';
-/// API KEY GOES ABOVE 'INBETWEEN_THESE'
 var isPanelVisible = false;
-if (!apiKey || apiKey.trim() === '') {
-  GM.notification("No API Key..", "TMDB To PTP");
-  console.log('No API Key. Stopping script.');
+window.addEventListener('load', function() {
+
+var tmdbApiKey = GM_getValue("TMDBAPI", "");
+
+if (!tmdbApiKey) {
+  var panel = document.createElement('div');
+  panel.className = 'panel';
+  panel.id = 'tmdbapikey';
+
+  var panelHeading = document.createElement('div');
+  panelHeading.className = 'panel__heading';
+
+  var headingTextTMDB = document.createElement('span');
+  headingTextTMDB.className = 'panel__heading__title';
+  headingTextTMDB.textContent = 'TMDB';
+  headingTextTMDB.style.color = '#50C2BF';
+
+  var headingText = document.createElement('span');
+  headingText.className = 'APIKey';
+  headingText.textContent = 'API Key';
+
+  panelHeading.appendChild(headingTextTMDB);
+  panelHeading.appendChild(headingText);
+  panel.appendChild(panelHeading);
+
+  var panelBody = document.createElement('div');
+  panelBody.className = 'panel__body';
+  panelBody.style.display = 'flex';
+  panelBody.style.flexWrap = 'wrap';
+  panelBody.style.justifyContent = 'space-around';
+  panelBody.style.border = '1px solid transparent';
+  panelBody.style.borderBottomLeftRadius = '10px';
+  panelBody.style.borderBottomRightRadius = '10px';
+
+  var tmdbApiKeyInput = document.createElement('input');
+  tmdbApiKeyInput.type = 'text';
+  tmdbApiKeyInput.placeholder = 'Enter your TMDB API Key here';
+  tmdbApiKeyInput.style.marginRight = '10px';
+  tmdbApiKeyInput.style.width = '300px';
+
+ var confirmButton = document.createElement('button');
+confirmButton.textContent = 'Confirm';
+confirmButton.onclick = function() {
+  GM_setValue("TMDBAPI", tmdbApiKeyInput.value);
+
+  GM_notification({
+    text: 'TMDB API Key saved. Please refresh the page.',
+    title: 'TMDB2PTP',
+    timeout: 4000
+  });
+};
+
+  panelBody.appendChild(tmdbApiKeyInput);
+  panelBody.appendChild(confirmButton);
+
+  panel.appendChild(panelBody);
+
+  var mainColumn = document.querySelector('.main-column');
+  mainColumn.insertBefore(panel, mainColumn.children[0]);
   return;
 }
-window.addEventListener('load', function() {
+let apiKey = GM_getValue("TMDBAPI", "");
     var movieName = document.querySelector("#content > div > h2").innerText;
     movieName = movieName.split('[')[0];
     movieName = movieName.trim();
@@ -106,6 +159,7 @@ window.addEventListener('load', function() {
     movieName = movieName.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
     movieName = movieName.replace(/\s+/g,"+");
     var xhr = new XMLHttpRequest();
+    let apiKey = GM_getValue("TMDBAPI", "");
     var url = 'https://api.themoviedb.org/3/search/movie?api_key=' + apiKey + '&query=' + movieName;
     console.log("API Call URL: ", url);
     xhr.open('GET', url);
@@ -136,9 +190,14 @@ window.addEventListener('load', function() {
                         panel.id = 'reccomendedtmdb';
                         var panelHeading = document.createElement('div');
                         panelHeading.className = 'panel__heading';
+                        var headingTextTMDB = document.createElement('span');
+                        headingTextTMDB.className = 'panel__heading__title';
+                        headingTextTMDB.textContent = 'TMDB';
+                        headingTextTMDB.style.color = '#50C2BF';
                         var headingText = document.createElement('span');
                         headingText.className = 'panel__heading';
                         headingText.textContent = 'Recommended Movies';
+                        panelHeading.appendChild(headingTextTMDB);
                         panelHeading.appendChild(headingText);
                         panel.appendChild(panelHeading);
                         var panelBody = document.createElement('div');
@@ -197,6 +256,7 @@ movieName = movieName.split('[')[0];
 movieName = movieName.trim();
 movieName = movieName.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
 movieName = movieName.replace(/\s+/g,"+");
+let apiKey = GM_getValue("TMDBAPI", "");
 var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://api.themoviedb.org/3/search/movie?api_key=' + apiKey + '&query=' + movieName);
 xhr.send();
@@ -309,6 +369,7 @@ window.addEventListener('load', function() {
     movieName = movieName.trim();
     movieName = movieName.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
     movieName = movieName.replace(/\s+/g,"+");
+    let apiKey = GM_getValue("TMDBAPI", "");
     GM_xmlhttpRequest({
         method: "GET",
         url: "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + movieName,
@@ -385,7 +446,7 @@ window.addEventListener('load', function() {
     movieName = movieName.trim();
     movieName = movieName.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
     movieName = movieName.replace(/\s+/g,"+");
-
+    let apiKey = GM_getValue("TMDBAPI", "");
     GM_xmlhttpRequest({
         method: "GET",
         url: "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + movieName,
@@ -460,6 +521,7 @@ function formatDate(dateString) {
 }
 
 
+
 window.addEventListener('load', function() {
     var reviewPanel = document.createElement('div');
     reviewPanel.className = 'panel';
@@ -493,6 +555,7 @@ window.addEventListener('load', function() {
     filmTitle = filmTitle.trim();
     filmTitle = filmTitle.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
     filmTitle = filmTitle.replace(/\s+/g,"+");
+    let apiKey = GM_getValue("TMDBAPI", "");
     GM_xmlhttpRequest({
         method: "GET",
         url: "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + filmTitle,
