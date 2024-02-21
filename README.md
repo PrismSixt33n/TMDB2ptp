@@ -2,6 +2,7 @@
 
 
 * v1.5 upload into dedicated repository.
+* v1.6 upload - Stylefixes & APIKey panel with locally stored API key.
 
 Functions of the script.
 
